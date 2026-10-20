@@ -25,13 +25,13 @@ On this machine (Windows), Node.js was installed via winget during a session. Sh
 
 React 19 + Vite 7, plain JavaScript (JSX), no router, no state library, no backend or persistence.
 
-Almost the entire app lives in `src/App.jsx`; only the income/expenses/balance cards were extracted into `src/Summary.jsx` (receives `transactions` as a prop and derives income, expenses and balance itself). `App.jsx` holds:
-- `transactions` state is seeded with hardcoded sample data and is lost on reload.
-- Form fields (description, amount, type, category) and filters (type, category) are each separate `useState` hooks.
-- The filtered list is derived on every render, not stored (totals are derived the same way, inside `Summary`).
-- The `categories` list is defined inline and shared by the add form and the category filter.
+`src/App.jsx` owns the shared state and composes three child components:
+- `transactions` state is seeded with hardcoded sample data and is lost on reload. The `categories` list is defined inline in `App` and passed down to the form and the list.
+- `src/Summary.jsx` receives `transactions` and derives income, expenses and balance on every render (not stored).
+- `src/TransactionForm.jsx` owns the form fields (description, amount, type, category) as separate `useState` hooks, builds the new transaction and hands it to `App` via `onAdd`.
+- `src/TransactionList.jsx` owns the filters (type, category) as `useState` hooks and derives the filtered list on every render.
 
-Transaction shape: `{ id, description, amount, type: "income" | "expense", category, date: "YYYY-MM-DD" }`. `amount` is stored as a **number**: the seed data uses numeric literals and `handleSubmit` converts the form input with `Number(amount)`. The totals use `reduce` with `+` and rely on this, so any new code that creates transactions must convert `amount` too.
+Transaction shape: `{ id, description, amount, type: "income" | "expense", category, date: "YYYY-MM-DD" }`. `amount` is stored as a **number**: the seed data uses numeric literals and `TransactionForm`'s `handleSubmit` converts the form input with `Number(amount)`. The totals use `reduce` with `+` and rely on this, so any new code that creates transactions must convert `amount` too.
 
 Styling is plain CSS: `src/index.css` (global) and `src/App.css` (component classes such as `summary-card`, `income-amount`, `expense-amount`).
 
