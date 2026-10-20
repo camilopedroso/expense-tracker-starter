@@ -25,8 +25,7 @@ On this machine (Windows), Node.js was installed via winget during a session. Sh
 
 React 19 + Vite 7, plain JavaScript (JSX), no router, no state library, no backend or persistence.
 
-`src/App.jsx` owns the shared state and composes three child components:
-- `transactions` state is seeded with hardcoded sample data and is lost on reload. The `categories` list is defined inline in `App` and passed down to the form and the list.
+`src/App.jsx` owns the shared state: `transactions` is seeded with hardcoded sample data and is lost on reload, and the `categories` list is defined inline. It composes three child components, passing them props:
 - `src/Summary.jsx` receives `transactions` and derives income, expenses and balance on every render (not stored).
 - `src/TransactionForm.jsx` owns the form fields (description, amount, type, category) as separate `useState` hooks, builds the new transaction and hands it to `App` via `onAdd`.
 - `src/TransactionList.jsx` owns the filters (type, category) as `useState` hooks and derives the filtered list on every render.
