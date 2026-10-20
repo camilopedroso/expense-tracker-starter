@@ -25,10 +25,10 @@ On this machine (Windows), Node.js was installed via winget during a session. Sh
 
 React 19 + Vite 7, plain JavaScript (JSX), no router, no state library, no backend or persistence.
 
-The entire app lives in a single component, `src/App.jsx`:
+Almost the entire app lives in `src/App.jsx`; only the income/expenses/balance cards were extracted into `src/Summary.jsx` (receives `transactions` as a prop and derives income, expenses and balance itself). `App.jsx` holds:
 - `transactions` state is seeded with hardcoded sample data and is lost on reload.
 - Form fields (description, amount, type, category) and filters (type, category) are each separate `useState` hooks.
-- Totals (income, expenses, balance) and the filtered list are derived on every render, not stored.
+- The filtered list is derived on every render, not stored (totals are derived the same way, inside `Summary`).
 - The `categories` list is defined inline and shared by the add form and the category filter.
 
 Transaction shape: `{ id, description, amount, type: "income" | "expense", category, date: "YYYY-MM-DD" }`. `amount` is stored as a **number**: the seed data uses numeric literals and `handleSubmit` converts the form input with `Number(amount)`. The totals use `reduce` with `+` and rely on this, so any new code that creates transactions must convert `amount` too.
