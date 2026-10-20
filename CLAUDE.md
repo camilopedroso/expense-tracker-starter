@@ -31,7 +31,7 @@ The entire app lives in a single component, `src/App.jsx`:
 - Totals (income, expenses, balance) and the filtered list are derived on every render, not stored.
 - The `categories` list is defined inline and shared by the add form and the category filter.
 
-Transaction shape: `{ id, description, amount, type: "income" | "expense", category, date: "YYYY-MM-DD" }`. Note that `amount` is stored as a **string** (both in seed data and from the form input), while the totals use `reduce` with `+`. Keep this in mind when touching any arithmetic.
+Transaction shape: `{ id, description, amount, type: "income" | "expense", category, date: "YYYY-MM-DD" }`. `amount` is stored as a **number**: the seed data uses numeric literals and `handleSubmit` converts the form input with `Number(amount)`. The totals use `reduce` with `+` and rely on this, so any new code that creates transactions must convert `amount` too.
 
 Styling is plain CSS: `src/index.css` (global) and `src/App.css` (component classes such as `summary-card`, `income-amount`, `expense-amount`).
 
