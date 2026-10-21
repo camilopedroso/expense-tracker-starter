@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import ConfirmModal from './ConfirmModal'
+import { formatCurrency } from './formatCurrency'
 
 function TransactionList({ transactions, categories, onDelete }) {
   const [filterType, setFilterType] = useState("all");
@@ -48,7 +49,7 @@ function TransactionList({ transactions, categories, onDelete }) {
               <td>{t.description}</td>
               <td>{t.category}</td>
               <td className={t.type === "income" ? "income-amount" : "expense-amount"}>
-                {t.type === "income" ? "+" : "-"}${t.amount}
+                {t.type === "income" ? "+" : "-"}{formatCurrency(t.amount)}
               </td>
               <td>
                 <button className="delete-btn" onClick={() => setPendingDelete(t)}>Delete</button>
