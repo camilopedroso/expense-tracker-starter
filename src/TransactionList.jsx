@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ConfirmModal from './ConfirmModal'
 import { formatCurrency } from './formatCurrency'
+import { formatCategory, formatDate } from './format'
 
 function TransactionList({ transactions, categories, onDelete }) {
   const [filterType, setFilterType] = useState("all");
@@ -15,49 +16,82 @@ function TransactionList({ transactions, categories, onDelete }) {
     filteredTransactions = filteredTransactions.filter(t => t.category === filterCategory);
   }
 
+  // Newest first; same-day entries fall back to the order they were added.
+  const sortedTransactions = [...filteredTransactions].sort(
+    (a, b) => b.date.localeCompare(a.date) || b.id - a.id
+  );
+
+  const isFiltered = filterType !== "all" || filterCategory !== "all";
+
+  const clearFilters = () => {
+    setFilterType("all");
+    setFilterCategory("all");
+  };
+
   return (
-    <div className="transactions">
-      <h2>Transactions</h2>
-      <div className="filters">
-        <select value={filterType} onChange={(e) => setFilterType(e.target.value)}>
-          <option value="all">All Types</option>
-          <option value="income">Income</option>
-          <option value="expense">Expense</option>
-        </select>
-        <select value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
-          <option value="all">All Categories</option>
-          {categories.map(cat => (
-            <option key={cat} value={cat}>{cat}</option>
-          ))}
-        </select>
+    <section className="panel transactions">
+      <div className="panel-header">
+        <h2>Transactions</h2>
+        <div className="filters">
+          <select aria-label="Filter by type" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
+            <option value="all">All types</option>
+            <option value="income">Income</option>
+            <option value="expense">Expenses</option>
+          </select>
+          <select aria-label="Filter by category" value={filterCategory} onChange={(e) => setFilterCategory(e.target.value)}>
+            <option value="all">All categories</option>
+            {categories.map(cat => (
+              <option key={cat} value={cat}>{formatCategory(cat)}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Category</th>
-            <th>Amount</th>
-            <th></th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredTransactions.map(t => (
-            <tr key={t.id}>
-              <td>{t.date}</td>
-              <td>{t.description}</td>
-              <td>{t.category}</td>
-              <td className={t.type === "income" ? "income-amount" : "expense-amount"}>
-                {t.type === "income" ? "+" : "-"}{formatCurrency(t.amount)}
-              </td>
-              <td>
-                <button className="delete-btn" onClick={() => setPendingDelete(t)}>Delete</button>
-              </td>
+      {sortedTransactions.length === 0 ? (
+        <div className="empty-state">
+          {isFiltered ? (
+            <>
+              <p>No transactions match these filters.</p>
+              <button className="text-btn" onClick={clearFilters}>Clear filters</button>
+            </>
+          ) : (
+            <p>No transactions yet. Add your first one above.</p>
+          )}
+        </div>
+      ) : (
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Category</th>
+              <th className="amount-col">Amount</th>
+              <th><span className="visually-hidden">Actions</span></th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {sortedTransactions.map(t => (
+              <tr key={t.id}>
+                <td className="date-cell">{formatDate(t.date)}</td>
+                <td className="description-cell">{t.description}</td>
+                <td className="category-cell">{formatCategory(t.category)}</td>
+                <td className={t.type === "income" ? "amount-col income-amount" : "amount-col expense-amount"}>
+                  {t.type === "income" ? "+" : "−"}{formatCurrency(t.amount)}
+                </td>
+                <td className="action-cell">
+                  <button
+                    className="delete-btn"
+                    aria-label={`Delete ${t.description}`}
+                    onClick={() => setPendingDelete(t)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
 
       {pendingDelete && (
         <ConfirmModal
@@ -69,7 +103,7 @@ function TransactionList({ transactions, categories, onDelete }) {
           onCancel={() => setPendingDelete(null)}
         />
       )}
-    </div>
+    </section>
   );
 }
 

@@ -4,6 +4,7 @@ import Summary from './Summary'
 import SpendingChart from './SpendingChart'
 import TransactionForm from './TransactionForm'
 import TransactionList from './TransactionList'
+import ThemeToggle from './ThemeToggle'
 
 function App() {
   const [transactions, setTransactions] = useState([
@@ -29,12 +30,16 @@ function App() {
 
   return (
     <div className="app">
-      <h1>Finance Tracker</h1>
-      <p className="subtitle">Track your income and expenses</p>
+      <header className="app-header">
+        <h1>Finance Tracker</h1>
+        <ThemeToggle />
+      </header>
 
       <Summary transactions={transactions} />
-      <SpendingChart transactions={transactions} />
-      <TransactionForm categories={categories} onAdd={addTransaction} />
+      <div className="workspace">
+        <SpendingChart transactions={transactions} />
+        <TransactionForm categories={categories} onAdd={addTransaction} />
+      </div>
       <TransactionList transactions={transactions} categories={categories} onDelete={deleteTransaction} />
     </div>
   );

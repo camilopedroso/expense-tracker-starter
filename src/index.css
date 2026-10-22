@@ -1,3 +1,66 @@
+:root {
+  --paper: #F1F4F1;
+  --surface: #FFFFFF;
+  --ink: #17201D;
+  --muted: #56635D;
+  --rule: #DCE3DF;
+  --note: #173F33;
+  --note-line: #5E9C84;
+  --note-text: #F1F4F1;
+  --income: #1A7450;
+  --danger: #B3261E;
+  --danger-fill: #B3261E;
+  --danger-wash: #FBEDEB;
+  --focus: #1F8A63;
+  --rule-strong: #B9C4BF;
+  --placeholder: #8B9691;
+  --primary: #173F33;
+  --primary-hover: #1F5545;
+  --primary-text: #F1F4F1;
+  --toggle-on: #FFFFFF;
+  --bar: #1F8A63;
+  --shadow: rgba(23, 32, 29, 0.12);
+  --overlay: rgba(23, 32, 29, 0.45);
+
+  color-scheme: light;
+
+  --radius-panel: 14px;
+  --radius-control: 8px;
+
+  font-family: "Schibsted Grotesk", system-ui, sans-serif;
+  line-height: 1.5;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Dark: the banknote panel stays the brightest green so it still leads the page. */
+:root[data-theme="dark"] {
+  --paper: #0F1714;
+  --surface: #16211D;
+  --ink: #E4EBE7;
+  --muted: #9AA8A2;
+  --rule: #2A3833;
+  --note: #1D4A3C;
+  --note-line: #6FB096;
+  --note-text: #EEF3F0;
+  --income: #5CC79A;
+  --danger: #F08A80;
+  --danger-fill: #C8433A;
+  --danger-wash: rgba(240, 138, 128, 0.12);
+  --focus: #4CC08F;
+  --rule-strong: #43534C;
+  --placeholder: #6E7C76;
+  --primary: #2C7A5E;
+  --primary-hover: #348A6B;
+  --primary-text: #F1F6F3;
+  --toggle-on: #2A3833;
+  --bar: #2FA273;
+  --shadow: rgba(0, 0, 0, 0.35);
+  --overlay: rgba(0, 0, 0, 0.6);
+
+  color-scheme: dark;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -5,7 +68,27 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
-  background-color: #ffffff;
-  color: #333;
+  background-color: var(--paper);
+  color: var(--ink);
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
