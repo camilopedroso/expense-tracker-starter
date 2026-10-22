@@ -5,19 +5,18 @@ metadata:
   type: project
 ---
 
-Primeiro review completo: 2026-10-22 (HEAD 12e1a13). Lint limpo nessa data.
+Review 1: 2026-10-22 (HEAD 12e1a13). Re-review das correções: 2026-10-22 (HEAD 150cf46, branch fix/code-review-findings). Lint limpo nas duas.
 Confira no código antes de mudar o status. Nenhum falso positivo rejeitado pelo usuário até agora.
 
-**Em aberto (2026-10-22)**
-- CRIT TransactionForm: data via `toISOString()` (UTC) -> dia seguinte à noite em fusos negativos (BR). format.js já faz parsing local; falta o inverso na criação.
-- CRIT TransactionForm: descrição só com espaços passa (`!description` sem trim); sem `required`, falha silenciosa.
-- IMP TransactionForm: default `"food"` hardcoded (useState e reset) acoplado à lista de categories do App.
-- IMP ConfirmModal: sem restauração de foco após fechar (botão Delete some -> foco vai pro body), sem focus trap, sem aria-labelledby/describedby. Sugerido `<dialog>` nativo + showModal().
-- IMP App.css ~174: `outline: none` em `:focus` do recharts (accessibilityLayer é true por padrão no recharts 3) -> foco de teclado invisível.
-- SUG App: `categories` recriado a cada render (mover p/ módulo); setState não funcional em add/delete.
-- SUG format.js vs formatCurrency.js: dois módulos de formatação, unificar.
-- SUG sort por `b.id - a.id` depende de id numérico (Date.now); quebra se migrar p/ UUID.
-- SUG Lógica "filtrar expense e somar" duplicada em Summary e SpendingChart.
-- SUG ThemeToggle: chave "theme" e lógica duplicadas com script inline do index.html.
+**Em aberto (achados novos do re-review, 2026-10-22)**
+- SUG ConfirmModal: `opener` = `document.activeElement` lido no render; no Safari/Firefox macOS clique não foca botão -> opener = body (isConnected) e o fallback (h2) nunca é usado. Sugerido ignorar body ou capturar o opener no onClick do Delete.
+- SUG ConfirmModal: clique no backdrop via `e.target === e.currentTarget` fecha se o usuário arrastar seleção de texto de dentro p/ fora.
+- SUG App.css `.modal::backdrop` usa `var(--overlay)`: só herda custom props em Chrome 122+/FF 120+/Safari 17.4+; antes disso backdrop fica transparente.
 
-**Já OK (não reportar):** amount convertido com Number; keys estáveis (t.id); datas exibidas com parsing local; Intl para moeda/data; prefers-reduced-motion respeitado; ThemeToggle trata localStorage indisponível.
+**Mitigados por decisão (só documentados com comentário; não re-reportar)**
+- sort `b.id - a.id` depende de id numérico (Date.now).
+- ThemeToggle x script inline do index.html: chave "theme" duplicada (script precisa rodar antes do bundle).
+
+**Corrigidos em 150cf46 (verificado)**: data local (todayISO em format.js); trim + required + setCustomValidity na descrição; default = categories[0]; ConfirmModal em `<dialog>` nativo com showModal, aria-labelledby, foco restaurado (opener ou h2 fallback); outline do recharts só some em :not(:focus-visible); CATEGORIES e sumByType em src/transactions.js; formatCurrency unificado em format.js; setState funcional.
+
+**Já OK (não reportar):** amount convertido com Number; keys estáveis (t.id); datas exibidas com parsing local; Intl para moeda/data; prefers-reduced-motion respeitado; ThemeToggle trata localStorage indisponível; ConfirmModal sob StrictMode (cleanup simulado tenta focar opener inerte, re-run pula showModal) funciona; guard `Number(amount) > 0` é defensivo (required/min bloqueiam antes).
