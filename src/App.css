@@ -171,8 +171,9 @@
 
 /* Chart */
 
-.spending-chart .recharts-surface:focus,
-.spending-chart .recharts-wrapper:focus {
+/* Recharts makes the chart focusable (arrow keys move the tooltip): hide the ring on click, keep it for keyboard. */
+.spending-chart .recharts-surface:focus:not(:focus-visible),
+.spending-chart .recharts-wrapper:focus:not(:focus-visible) {
   outline: none;
 }
 
@@ -425,25 +426,27 @@ td.amount-col {
 
 /* Modal */
 
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--overlay);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-}
-
 .modal {
+  /* The browser centers a modal <dialog> with margin: auto, which the global reset in index.css removes. */
+  margin: auto;
+  border: none;
+  padding: 0;
   background: var(--surface);
-  padding: 24px;
+  color: var(--ink);
   border-radius: var(--radius-panel);
-  max-width: 380px;
+  max-width: min(380px, calc(100% - 32px));
   width: 100%;
   font-size: 16px;
   font-weight: 500;
   box-shadow: 0 20px 50px var(--shadow);
+}
+
+.modal::backdrop {
+  background: var(--overlay);
+}
+
+.modal-body {
+  padding: 24px;
 }
 
 .modal-actions {

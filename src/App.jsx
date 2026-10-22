@@ -5,6 +5,7 @@ import SpendingChart from './SpendingChart'
 import TransactionForm from './TransactionForm'
 import TransactionList from './TransactionList'
 import ThemeToggle from './ThemeToggle'
+import { CATEGORIES } from './transactions'
 
 function App() {
   const [transactions, setTransactions] = useState([
@@ -18,14 +19,12 @@ function App() {
     { id: 8, description: "Netflix", amount: 15, type: "expense", category: "entertainment", date: "2025-01-10" },
   ]);
 
-  const categories = ["food", "housing", "utilities", "transport", "entertainment", "salary", "other"];
-
   const addTransaction = (transaction) => {
-    setTransactions([...transactions, transaction]);
+    setTransactions(prev => [...prev, transaction]);
   };
 
   const deleteTransaction = (id) => {
-    setTransactions(transactions.filter(t => t.id !== id));
+    setTransactions(prev => prev.filter(t => t.id !== id));
   };
 
   return (
@@ -38,9 +37,9 @@ function App() {
       <Summary transactions={transactions} />
       <div className="workspace">
         <SpendingChart transactions={transactions} />
-        <TransactionForm categories={categories} onAdd={addTransaction} />
+        <TransactionForm categories={CATEGORIES} onAdd={addTransaction} />
       </div>
-      <TransactionList transactions={transactions} categories={categories} onDelete={deleteTransaction} />
+      <TransactionList transactions={transactions} categories={CATEGORIES} onDelete={deleteTransaction} />
     </div>
   );
 }

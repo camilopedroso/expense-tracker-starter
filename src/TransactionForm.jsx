@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { formatCategory } from './format'
+import { useRef, useState } from 'react'
+import { formatCategory, todayISO } from './format'
 
 const TYPES = [
   { value: "expense", label: "Expense" },
@@ -7,27 +7,37 @@ const TYPES = [
 ];
 
 function TransactionForm({ categories, onAdd }) {
+  const defaultCategory = categories[0];
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("expense");
-  const [category, setCategory] = useState("food");
+  const [category, setCategory] = useState(defaultCategory);
+  const descriptionRef = useRef(null);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!description || !amount) return;
+    const text = description.trim();
+    // `required` doesn't catch whitespace-only input, so report it with the browser's own validation UI.
+    if (!text) {
+      descriptionRef.current.setCustomValidity("Enter a description.");
+      descriptionRef.current.reportValidity();
+      return;
+    }
+    if (!(Number(amount) > 0)) return;
 
     onAdd({
+      // Numeric on purpose: TransactionList breaks same-day ties with `b.id - a.id`.
       id: Date.now(),
-      description,
+      description: text,
       amount: Number(amount),
       type,
       category,
-      date: new Date().toISOString().split('T')[0],
+      date: todayISO(),
     });
     setDescription("");
     setAmount("");
     setType("expense");
-    setCategory("food");
+    setCategory(defaultCategory);
   };
 
   return (
@@ -54,10 +64,15 @@ function TransactionForm({ categories, onAdd }) {
         <label className="field">
           <span>Description</span>
           <input
+            ref={descriptionRef}
             type="text"
+            required
             placeholder="Groceries, rent, paycheck…"
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={(e) => {
+              e.target.setCustomValidity("");
+              setDescription(e.target.value);
+            }}
           />
         </label>
         <div className="field-row">
@@ -65,6 +80,7 @@ function TransactionForm({ categories, onAdd }) {
             <span>Amount</span>
             <input
               type="number"
+              required
               inputMode="decimal"
               min="0.01"
               step="0.01"

@@ -1,4 +1,5 @@
-import { formatCurrency } from './formatCurrency'
+import { formatCurrency } from './format'
+import { sumByType } from './transactions'
 
 // Interlaced waves in the style of the engraved line work on a banknote.
 const GUILLOCHE_WIDTH = 600;
@@ -36,14 +37,8 @@ function Guilloche() {
 }
 
 function Summary({ transactions }) {
-  const totalIncome = transactions
-    .filter(t => t.type === "income")
-    .reduce((sum, t) => sum + t.amount, 0);
-
-  const totalExpenses = transactions
-    .filter(t => t.type === "expense")
-    .reduce((sum, t) => sum + t.amount, 0);
-
+  const totalIncome = sumByType(transactions, "income");
+  const totalExpenses = sumByType(transactions, "expense");
   const balance = totalIncome - totalExpenses;
 
   return (

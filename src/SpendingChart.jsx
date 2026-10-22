@@ -1,6 +1,6 @@
 import { BarChart, Bar, LabelList, XAxis, YAxis, Tooltip } from 'recharts'
-import { formatCurrency } from './formatCurrency'
-import { formatCategory } from './format'
+import { formatCategory, formatCurrency } from './format'
+import { sumByType } from './transactions'
 
 // One series, so one hue (set in App.css per theme): the category name on each row carries identity.
 const ROW_HEIGHT = 40;
@@ -32,7 +32,7 @@ function SpendingChart({ transactions }) {
     .map(([category, total]) => ({ category, total }))
     .sort((a, b) => b.total - a.total);
 
-  const totalSpent = data.reduce((sum, d) => sum + d.total, 0);
+  const totalSpent = sumByType(transactions, "expense");
 
   return (
     <section className="panel spending-chart">

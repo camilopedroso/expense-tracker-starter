@@ -1,12 +1,12 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import ConfirmModal from './ConfirmModal'
-import { formatCurrency } from './formatCurrency'
-import { formatCategory, formatDate } from './format'
+import { formatCategory, formatCurrency, formatDate } from './format'
 
 function TransactionList({ transactions, categories, onDelete }) {
   const [filterType, setFilterType] = useState("all");
   const [filterCategory, setFilterCategory] = useState("all");
   const [pendingDelete, setPendingDelete] = useState(null);
+  const headingRef = useRef(null);
 
   let filteredTransactions = transactions;
   if (filterType !== "all") {
@@ -16,7 +16,7 @@ function TransactionList({ transactions, categories, onDelete }) {
     filteredTransactions = filteredTransactions.filter(t => t.category === filterCategory);
   }
 
-  // Newest first; same-day entries fall back to the order they were added.
+  // Newest first; same-day entries fall back to the order they were added (ids are Date.now() numbers).
   const sortedTransactions = [...filteredTransactions].sort(
     (a, b) => b.date.localeCompare(a.date) || b.id - a.id
   );
@@ -31,7 +31,8 @@ function TransactionList({ transactions, categories, onDelete }) {
   return (
     <section className="panel transactions">
       <div className="panel-header">
-        <h2>Transactions</h2>
+        {/* Focus target after a delete, when the row's Delete button no longer exists. */}
+        <h2 ref={headingRef} tabIndex={-1}>Transactions</h2>
         <div className="filters">
           <select aria-label="Filter by type" value={filterType} onChange={(e) => setFilterType(e.target.value)}>
             <option value="all">All types</option>
@@ -101,6 +102,7 @@ function TransactionList({ transactions, categories, onDelete }) {
             setPendingDelete(null);
           }}
           onCancel={() => setPendingDelete(null)}
+          fallbackFocusRef={headingRef}
         />
       )}
     </section>

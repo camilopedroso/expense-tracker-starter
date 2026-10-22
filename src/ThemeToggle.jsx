@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 
+// Keep in sync with the inline script in index.html, which applies the same rule before the first paint.
 const STORAGE_KEY = "theme";
 const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
 
