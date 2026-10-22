@@ -1,0 +1,1 @@
+- [Achados de review](review-findings.md) — status dos problemas reportados em src/ (abertos/corrigidos) e o que já está OK
