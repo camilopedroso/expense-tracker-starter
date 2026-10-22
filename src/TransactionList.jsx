@@ -7,6 +7,7 @@ function TransactionList({ transactions, categories, onDelete }) {
   const [filterCategory, setFilterCategory] = useState("all");
   const [pendingDelete, setPendingDelete] = useState(null);
   const headingRef = useRef(null);
+  const deleteButtonRef = useRef(null);
 
   let filteredTransactions = transactions;
   if (filterType !== "all") {
@@ -83,7 +84,10 @@ function TransactionList({ transactions, categories, onDelete }) {
                   <button
                     className="delete-btn"
                     aria-label={`Delete ${t.description}`}
-                    onClick={() => setPendingDelete(t)}
+                    onClick={(e) => {
+                      deleteButtonRef.current = e.currentTarget;
+                      setPendingDelete(t);
+                    }}
                   >
                     Delete
                   </button>
@@ -102,6 +106,7 @@ function TransactionList({ transactions, categories, onDelete }) {
             setPendingDelete(null);
           }}
           onCancel={() => setPendingDelete(null)}
+          openerRef={deleteButtonRef}
           fallbackFocusRef={headingRef}
         />
       )}

@@ -442,7 +442,8 @@ td.amount-col {
 }
 
 .modal::backdrop {
-  background: var(--overlay);
+  /* ::backdrop only inherits custom properties since Chrome 122, Firefox 120 and Safari 17.4; older ones use the fallback. */
+  background: var(--overlay, rgba(0, 0, 0, 0.5));
 }
 
 .modal-body {

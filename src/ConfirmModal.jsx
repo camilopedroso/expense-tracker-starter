@@ -1,15 +1,17 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef } from 'react'
 
 // Native modal <dialog>: the browser traps focus, makes the page behind it inert and closes it on Esc.
-function ConfirmModal({ message, onConfirm, onCancel, fallbackFocusRef }) {
+// `openerRef` holds the element that opened the modal; it's passed in because Safari doesn't focus
+// buttons on click, so document.activeElement would just be <body>.
+function ConfirmModal({ message, onConfirm, onCancel, openerRef, fallbackFocusRef }) {
   const dialogRef = useRef(null);
   const cancelRef = useRef(null);
+  const pressedBackdrop = useRef(false);
   const messageId = useId();
-  // Read at render, before the dialog takes focus, so it is the element that opened the modal.
-  const [opener] = useState(() => document.activeElement);
 
   useEffect(() => {
     const dialog = dialogRef.current;
+    const opener = openerRef?.current;
     const fallback = fallbackFocusRef?.current;
     if (!dialog.open) dialog.showModal();
     cancelRef.current.focus();
@@ -20,7 +22,7 @@ function ConfirmModal({ message, onConfirm, onCancel, fallbackFocusRef }) {
       const target = opener?.isConnected ? opener : fallback;
       target?.focus();
     };
-  }, [opener, fallbackFocusRef]);
+  }, [openerRef, fallbackFocusRef]);
 
   return (
     <dialog
@@ -28,8 +30,13 @@ function ConfirmModal({ message, onConfirm, onCancel, fallbackFocusRef }) {
       className="modal"
       aria-labelledby={messageId}
       onClose={onCancel}
-      // The dialog has no padding, so a click on the element itself is a click on the backdrop.
-      onClick={(e) => e.target === e.currentTarget && onCancel()}
+      // The dialog has no padding, so the element itself is only hit on the backdrop. Require both
+      // press and release there: dragging a text selection out of the dialog also clicks the <dialog>.
+      onMouseDown={(e) => { pressedBackdrop.current = e.target === e.currentTarget; }}
+      onClick={(e) => {
+        if (pressedBackdrop.current && e.target === e.currentTarget) onCancel();
+        pressedBackdrop.current = false;
+      }}
     >
       <div className="modal-body">
         <p id={messageId}>{message}</p>
